@@ -29,8 +29,11 @@ namespace HostedService
             var elasticConfig = new ConfigurationElasticSerilog();
             Configuration.GetSection("Serilog:Elasticsearch").Bind(elasticConfig);
 
+            var healthChecksBuilder = services.AddHealthChecks();
+            if(elasticConfig.Enabled)
+                healthChecksBuilder.AddElasticsearch(elasticConfig.Url);
+
             services.AddSerilog(elasticConfig);
-            services.AddHealthChecks().AddElasticsearch(elasticConfig.Url);
 
             services.AddHostedService<WorkerHostedService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
