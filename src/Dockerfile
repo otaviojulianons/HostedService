@@ -4,10 +4,10 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/core/sdk:2.2-stretch AS build
 WORKDIR /src
-COPY ["HostedService/HostedService.csproj", "HostedService/"]
-RUN dotnet restore "HostedService/HostedService.csproj"
+COPY ["HostedService.csproj", "./"]
+RUN dotnet restore "HostedService.csproj"
 COPY . .
-WORKDIR "/src/HostedService"
+WORKDIR "/src/"
 RUN dotnet build "HostedService.csproj" -c Release -o /app
 
 FROM build AS publish

@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  hostedservice:
+    container_name: hostedservice
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+  elasticsearch:
+    image: "docker.elastic.co/elasticsearch/elasticsearch:7.3.0"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - "discovery.type=single-node"
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.3.0
+    ports:
+      - "5601:5601"  
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+    - 9090:9090
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+    - ..\deploy\prometheus.yml:/etc/prometheus/prometheus.yml
+
+
+  

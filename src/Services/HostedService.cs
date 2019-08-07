@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace HostedService
 {
-    public abstract class BackgroundService : IHostedService, IDisposable
+    public abstract class HostedService : IHostedService, IDisposable
     {
         private Task _executingTask;
         private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();

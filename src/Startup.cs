@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Net.Mime;
+using Prometheus;
 
 namespace HostedService
 {
@@ -26,14 +27,14 @@ namespace HostedService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var elasticConfig = new ConfigurationElasticSerilog();
-            Configuration.GetSection("Serilog:Elasticsearch").Bind(elasticConfig);
+            var serilogConfig = new SerilogConfig();
+            Configuration.GetSection("Serilog").Bind(serilogConfig);
 
             var healthChecksBuilder = services.AddHealthChecks();
-            if(elasticConfig.Enabled)
-                healthChecksBuilder.AddElasticsearch(elasticConfig.Url);
+            if(serilogConfig.Elasticsearch.Enabled)
+                healthChecksBuilder.AddElasticsearch(serilogConfig.Elasticsearch.Url);
 
-            services.AddSerilog(elasticConfig);
+            services.AddSerilog(serilogConfig);
 
             services.AddHostedService<WorkerHostedService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -61,6 +62,8 @@ namespace HostedService
                     await context.Response.WriteAsync(result);
                 }
             });
+
+            app.UseMetricServer();
 
             if (env.IsDevelopment())
             {

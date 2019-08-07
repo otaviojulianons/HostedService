@@ -8,15 +8,15 @@ namespace HostedService.Utils
     public static class SerilogExtensions
     {
         
-        public static void AddSerilog(this IServiceCollection services, ConfigurationElasticSerilog elasticConfig)
+        public static void AddSerilog(this IServiceCollection services, SerilogConfig serilogConfig)
         {
             var loggerConfig = new LoggerConfiguration()
                            .MinimumLevel.Information()
                            .Enrich.FromLogContext();
 
-            if (elasticConfig.Enabled)
+            if (serilogConfig.Elasticsearch.Enabled)
             {
-                loggerConfig.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticConfig.Url))
+                loggerConfig.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(serilogConfig.Elasticsearch.Url))
                 {
                     AutoRegisterTemplate = true,
                     TemplateName = "serilog",
