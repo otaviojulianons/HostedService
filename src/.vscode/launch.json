@@ -29,7 +29,9 @@
             "type": "docker-coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "dockerBuild": {},
+            "dockerBuild": {
+                "tag": "hostedservice",
+            },
             "dockerRun": {
                 "containerName": "hostedservice",
                 "network": "src_default",
