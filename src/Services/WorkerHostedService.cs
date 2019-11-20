@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Prometheus;
 using Serilog;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,7 +21,14 @@ namespace HostedService
             _logger = logger;
             _configuration = configuration;
             _random = new Random();
-            _workDuration = Metrics.CreateHistogram("worker_service", "Histogram of worker processing durations.");
+            _workDuration = Metrics.CreateHistogram(
+                "worker_service", 
+                "Histogram of worker processing durations.",
+                new HistogramConfiguration()
+                {
+                    Buckets = Histogram.LinearBuckets(0, 0.1, 50)
+                                .Concat(Histogram.LinearBuckets(5.0, 2.5, 10)).ToArray()
+                });
         }
 
         protected override async Task ExecuteAsync(CancellationToken stopToken)
@@ -39,5 +47,6 @@ namespace HostedService
             }
             _logger.LogInformation("ExecuteAsync-End");
         }
+
     }
 }
