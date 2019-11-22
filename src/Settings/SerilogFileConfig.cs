@@ -1,4 +1,4 @@
-﻿namespace HostedService.Utils
+﻿namespace HostedService.Settings
 {
     public class SerilogFileConfig
     {

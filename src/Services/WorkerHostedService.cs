@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using HostedService.Settings;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Prometheus;
 using Serilog;
 using System;
@@ -15,10 +17,15 @@ namespace HostedService
         private readonly IConfiguration _configuration;
         private readonly Random _random;
         private readonly Histogram _workDuration;
+        private IOptionsMonitor<WorkerConfig> _workerConfig;
 
-        public WorkerHostedService(ILogger<WorkerHostedService> logger, IConfiguration configuration)
+        public WorkerHostedService(
+            ILogger<WorkerHostedService> logger,
+            IOptionsMonitor<WorkerConfig> workerConfig,
+            IConfiguration configuration)
         {
             _logger = logger;
+            _workerConfig = workerConfig;
             _configuration = configuration;
             _random = new Random();
             _workDuration = Metrics.CreateHistogram(
@@ -34,14 +41,18 @@ namespace HostedService
         protected override async Task ExecuteAsync(CancellationToken stopToken)
         {
             _logger.LogInformation("ExecuteAsync-Begin");
-            var minDelay = _configuration.GetValue<int>("MinServiceDelay");
-            var maxDelay = _configuration.GetValue<int>("MaxServiceDelay");
 
             while (!stopToken.IsCancellationRequested)
             {
+                // var minDelay = _configuration.GetValue<int>("WorkerConfig:MinServiceDelay");
+                // var maxDelay = _configuration.GetValue<int>("WorkerConfig:MaxServiceDelay");
+
+                var minDelay = _workerConfig.CurrentValue.MinServiceDelay;
+                var maxDelay = _workerConfig.CurrentValue.MaxServiceDelay;
+
                 using (_workDuration.NewTimer())
                 {
-                    Log.Information("I'm alive");
+                    Log.Information($"Configuration -> MinServiceDelay:{minDelay} MaxServiceDelay:{maxDelay}");
                     await Task.Delay(_random.Next(minDelay, maxDelay));
                 }
             }

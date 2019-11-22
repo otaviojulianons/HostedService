@@ -1,4 +1,4 @@
-﻿using HostedService.Utils;
+﻿using HostedService.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +27,8 @@ namespace HostedService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<WorkerConfig>(Configuration.GetSection("WorkerConfig"));
+
             var serilogConfig = new SerilogConfig();
             Configuration.GetSection("Serilog").Bind(serilogConfig);
 

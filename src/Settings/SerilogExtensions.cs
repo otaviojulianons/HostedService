@@ -3,7 +3,7 @@ using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using System;
 
-namespace HostedService.Utils
+namespace HostedService.Settings
 {
     public static class SerilogExtensions
     {
@@ -12,7 +12,8 @@ namespace HostedService.Utils
         {
             var loggerConfig = new LoggerConfiguration()
                            .MinimumLevel.Information()
-                           .Enrich.FromLogContext();
+                           .Enrich.FromLogContext()
+                           .WriteTo.Console();
 
             if (serilogConfig.Elasticsearch.Enabled)
             {
