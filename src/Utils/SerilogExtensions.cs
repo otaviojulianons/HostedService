@@ -23,6 +23,11 @@ namespace HostedService.Utils
                     IndexFormat = "serilog-{0:yyyy.MM}"
                 });
             }
+            if (serilogConfig.File.Enabled)
+            {
+                loggerConfig.WriteTo.File(serilogConfig.File.Path, rollingInterval: RollingInterval.Day);
+            }
+
             Serilog.Log.Logger = loggerConfig.CreateLogger();
         }
 
