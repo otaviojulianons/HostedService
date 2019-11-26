@@ -44,9 +44,6 @@ namespace HostedService
 
             while (!stopToken.IsCancellationRequested)
             {
-                // var minDelay = _configuration.GetValue<int>("WorkerConfig:MinServiceDelay");
-                // var maxDelay = _configuration.GetValue<int>("WorkerConfig:MaxServiceDelay");
-
                 var minDelay = _workerConfig.CurrentValue.MinServiceDelay;
                 var maxDelay = _workerConfig.CurrentValue.MaxServiceDelay;
 

@@ -30,10 +30,8 @@ namespace HostedService
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((builderContext, config) =>
                 {
-                    IHostingEnvironment env = builderContext.HostingEnvironment;
-
-                    config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                    config.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                    config.AddJsonFile("config/appsettings.json", optional: true, reloadOnChange: true);
+                    config.AddEnvironmentVariables();
                 });
     }
 }
