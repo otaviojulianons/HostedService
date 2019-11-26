@@ -6,5 +6,11 @@ namespace HostedService.Settings
 
         public int MaxServiceDelay { get; set; }
 
+        public bool StressTest { get; set; }
+
+        public int StressTestDelay { get; set; }
+
+        public int StressTestCores { get; set; }
+
     }
 }

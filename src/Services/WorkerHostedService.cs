@@ -46,10 +46,22 @@ namespace HostedService
             {
                 var minDelay = _workerConfig.CurrentValue.MinServiceDelay;
                 var maxDelay = _workerConfig.CurrentValue.MaxServiceDelay;
+                var stressTest = _workerConfig.CurrentValue.StressTest;
+                var stressTestDelay = _workerConfig.CurrentValue.StressTestDelay;
+                var stressTestCores = _workerConfig.CurrentValue.StressTestCores;
 
                 using (_workDuration.NewTimer())
                 {
-                    Log.Information($"Configuration -> MinServiceDelay:{minDelay} MaxServiceDelay:{maxDelay}");
+                    if (stressTest)
+                    {
+                        var stressTestTaskDelay = Task.Delay(stressTestDelay);
+                        Parallel.For(0, stressTestCores, (value, state) =>
+                        {
+                            while (!stressTestTaskDelay.IsCompleted && !stopToken.IsCancellationRequested);
+                        });
+                    }
+
+                    Log.Information($"MinServiceDelay:{minDelay} MaxServiceDelay:{maxDelay} StressTest:{stressTest} StressTestDelay: {stressTestDelay}");
                     await Task.Delay(_random.Next(minDelay, maxDelay));
                 }
             }
