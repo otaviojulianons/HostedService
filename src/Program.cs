@@ -31,10 +31,6 @@ namespace HostedService
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((builderContext, config) =>
                 {
-                    config.AddJsonFile(ConfigMapFileProvider.FromRelativePath("config"),
-                        "appsettings.json",
-                        optional: true,
-                        reloadOnChange: true);
                     config.AddEnvironmentVariables();
                 });
     }

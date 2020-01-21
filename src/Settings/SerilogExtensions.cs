@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Serilog.Formatting.Elasticsearch;
 using Serilog.Sinks.Elasticsearch;
 using System;
 
@@ -10,6 +11,7 @@ namespace HostedService.Settings
         
         public static void AddSerilog(this IServiceCollection services, SerilogConfig serilogConfig)
         {
+            
             var loggerConfig = new LoggerConfiguration()
                            .MinimumLevel.Information()
                            .Enrich.FromLogContext()
@@ -17,12 +19,21 @@ namespace HostedService.Settings
 
             if (serilogConfig.Elasticsearch.Enabled)
             {
-                loggerConfig.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(serilogConfig.Elasticsearch.Url))
+                if(!string.IsNullOrEmpty(serilogConfig.Elasticsearch.Path))
                 {
-                    AutoRegisterTemplate = true,
-                    TemplateName = "serilog",
-                    IndexFormat = "serilog-{0:yyyy.MM}"
-                });
+                    loggerConfig.WriteTo.File(new ElasticsearchJsonFormatter(), serilogConfig.Elasticsearch.Path, rollingInterval: RollingInterval.Day);
+                }
+
+                if (!string.IsNullOrEmpty(serilogConfig.Elasticsearch.Url))
+                {
+                    loggerConfig.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(serilogConfig.Elasticsearch.Url))
+                    {
+                        AutoRegisterTemplate = true,
+                        TemplateName = "serilog",
+                        IndexFormat = "serilog-{0:yyyy.MM}"
+                    });
+                }
+
             }
             if (serilogConfig.File.Enabled)
             {
