@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hostedservice
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: hostedservice
+    spec:
+      containers:
+      - name: hostedservice
+        image: otaviojulianons/hostedservice:latest
+        ports:
+          - containerPort: 80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  hostedservice
+spec:
+  selector:
+    app:  hostedservice
+  type:  LoadBalancer
+  ports:
+  - port:  8080
+    targetPort:  80
