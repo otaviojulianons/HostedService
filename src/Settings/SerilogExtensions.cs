@@ -3,7 +3,7 @@ using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using System;
 
-namespace HostedService.Utils
+namespace HostedService.Settings
 {
     public static class SerilogExtensions
     {
@@ -12,7 +12,8 @@ namespace HostedService.Utils
         {
             var loggerConfig = new LoggerConfiguration()
                            .MinimumLevel.Information()
-                           .Enrich.FromLogContext();
+                           .Enrich.FromLogContext()
+                           .WriteTo.Console();
 
             if (serilogConfig.Elasticsearch.Enabled)
             {
@@ -23,6 +24,11 @@ namespace HostedService.Utils
                     IndexFormat = "serilog-{0:yyyy.MM}"
                 });
             }
+            if (serilogConfig.File.Enabled)
+            {
+                loggerConfig.WriteTo.File(serilogConfig.File.Path, rollingInterval: RollingInterval.Day);
+            }
+
             Serilog.Log.Logger = loggerConfig.CreateLogger();
         }
 
