@@ -14,6 +14,13 @@ spec:
         image: otaviojulianons/hostedservice:latest
         ports:
           - containerPort: 80
+        env:
+          - name: Serilog__Elasticsearch__Enabled
+            value: "true"
+            name: Serilog__Elasticsearch__Path
+            value: "logs/serilog.txt"
+            name: Serilog__Elasticsearch__Url
+            value: ""            
 ---
 kind: Service
 apiVersion: v1

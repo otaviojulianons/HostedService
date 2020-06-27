@@ -2,12 +2,13 @@ version: '3.4'
 
 services:
   hostedservice:
-    container_name: hostedservice
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: otaviojulianons/hostedservice:latest
     ports:
       - "5000:80"
+    environment: 
+      - "Serilog__Elasticsearch__Enabled=true"
+      - "Serilog__Elasticsearch__Path=logs/serilog.txt"
+      - "Serilog__Elasticsearch__Url="
   elasticsearch:
     image: "docker.elastic.co/elasticsearch/elasticsearch:7.3.0"
     ports:
@@ -15,10 +16,19 @@ services:
       - "9300:9300"
     environment:
       - "discovery.type=single-node"
+  logstash:
+    image: logstash
+    volumes:
+      - ..\deploy\logstash-input-file.conf:/config-dir/logstash-input-file.conf
+    command: logstash -f /config-dir/logstash-input-file.conf
+    depends_on:
+      - elasticsearch
   kibana:
     image: docker.elastic.co/kibana/kibana:7.3.0
     ports:
-      - "5601:5601"  
+      - "5601:5601"
+    depends_on:
+      - elasticsearch 
   prometheus:
     image: prom/prometheus:latest
     ports:
